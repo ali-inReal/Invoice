@@ -25,6 +25,7 @@ export interface InvoiceData {
   subTotal: string;
   vatTotal: string;
   grandTotal: string;
+  amountInWords: string;
 }
 
 export const emptyItem: InvoiceItem = {
@@ -54,6 +55,7 @@ export const initialInvoiceData: InvoiceData = {
   subTotal: "",
   vatTotal: "",
   grandTotal: "",
+  amountInWords: "",
 };
 
 /** Returns a fresh copy for new invoices so items array is not shared. */

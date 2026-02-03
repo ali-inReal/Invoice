@@ -346,6 +346,71 @@
   margin-bottom: 1.5rem;
 }
 
+/* BILL TO section - organized layout */
+.bill-to-section {
+  padding: 0.75rem 0 1rem;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+}
+
+.bill-to-head-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.bill-to-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b6b6b;
+  flex-shrink: 0;
+}
+
+.bill-to-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.bill-to-line2 {
+  font-size: 0.9rem;
+  color: #444;
+  margin-bottom: 0.6rem;
+}
+
+.bill-to-refs {
+  font-size: 0.85rem;
+  color: #333;
+}
+
+.bill-to-ref-row1 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 0.4rem;
+  align-items: baseline;
+}
+
+.bill-to-ref-row2 {
+  display: block;
+  margin-bottom: 0;
+}
+
+.bill-to-ref-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.bill-to-ref-item strong {
+  font-weight: 600;
+  margin-right: 0.2rem;
+}
+
 .invoice-block {
   margin-bottom: 0.5rem;
 }
@@ -423,6 +488,13 @@
   margin-top: 0.5rem;
   padding-top: 0.5rem;
   border-top: 2px solid #333;
+}
+
+.invoice-amount-in-words {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #333;
 }
 
 @media (max-width: 640px) {

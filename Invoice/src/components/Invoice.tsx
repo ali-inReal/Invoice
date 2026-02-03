@@ -290,6 +290,15 @@ export default function Invoice({ data, logoUrl = "", onSave, onDelete }: Invoic
             />
           </div>
         </div>
+
+        <div className="form-group span-full" style={{ marginTop: "0.5rem" }}>
+          <label>Amount in Words</label>
+          <input
+            value={invoiceData.amountInWords ?? ""}
+            onChange={(e) => updateField("amountInWords", e.target.value)}
+            placeholder="e.g. Six hundred and eighty two AED 50/100 Fils"
+          />
+        </div>
       </div>
     );
   }
@@ -327,17 +336,20 @@ export default function Invoice({ data, logoUrl = "", onSave, onDelete }: Invoic
           </div>
         </header>
 
-        <div className="invoice-parties">
-          <div className="invoice-block bill-to">
-            <div className="invoice-block-label">Bill To</div>
-            <div className="invoice-block-value">{invoiceData.customerName}</div>
-            {invoiceData.poBox && <div>{invoiceData.poBox}</div>}
-            <div className="invoice-details-grid">
-              {invoiceData.trnNo && <div><span>TRN:</span> {invoiceData.trnNo}</div>}
-              {invoiceData.customerCode && <div><span>Customer Code:</span> {invoiceData.customerCode}</div>}
-              {invoiceData.customerRef && <div><span>Customer Ref:</span> {invoiceData.customerRef}</div>}
-              {invoiceData.clientCode && <div><span>Client Code:</span> {invoiceData.clientCode}</div>}
-              {invoiceData.customerRefName && <div><span>Customer Ref Name:</span> {invoiceData.customerRefName}</div>}
+        <div className="invoice-parties bill-to-section">
+          <div className="bill-to-head-row">
+            <span className="bill-to-label">BILL TO</span>
+            <span className="bill-to-name">{invoiceData.customerName || "—"}</span>
+          </div>
+          {invoiceData.poBox && <div className="bill-to-line2">{invoiceData.poBox}</div>}
+          <div className="bill-to-refs">
+            <div className="bill-to-ref-row1">
+              <span className="bill-to-ref-item"><strong>TRN:</strong> {invoiceData.trnNo || "—"}</span>
+              <span className="bill-to-ref-item"><strong>Customer Code:</strong> {invoiceData.customerCode || "—"}</span>
+              <span className="bill-to-ref-item"><strong>Client Code:</strong> {invoiceData.clientCode || "—"}</span>
+            </div>
+            <div className="bill-to-ref-row2">
+              <span className="bill-to-ref-item"><strong>Customer Ref Name:</strong> {invoiceData.customerRefName || "—"}</span>
             </div>
           </div>
         </div>
@@ -385,6 +397,10 @@ export default function Invoice({ data, logoUrl = "", onSave, onDelete }: Invoic
             <span>{invoiceData.grandTotal}</span>
           </div>
         </div>
+
+        {invoiceData.amountInWords && (
+          <div className="invoice-amount-in-words">{invoiceData.amountInWords}</div>
+        )}
       </div>
     </div>
   );

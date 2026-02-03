@@ -1,0 +1,77 @@
+#root {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.app {
+  min-height: 100vh;
+  background: #f0f2f5;
+  padding: 1rem;
+  text-align: left;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.app-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.app-empty p {
+  margin: 0 0 1rem;
+  color: #555;
+}
+
+.app-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.app-tabs .tab {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #444;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-tabs .tab:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+}
+
+.app-tabs .tab.active {
+  background: #535bf2;
+  border-color: #535bf2;
+  color: #fff;
+}
+
+.app-tabs .btn {
+  font-family: inherit;
+}

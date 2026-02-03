@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import { initialInvoiceData, type InvoiceData, type InvoiceItem } from "../types/invoice";
+import type { InvoiceData, InvoiceItem } from "../types/invoice";
 import "./Invoice.css";
 
 interface InvoiceProps {
@@ -12,7 +12,7 @@ interface InvoiceProps {
 }
 
 export default function Invoice({ data, logoUrl = "", onSave, onDelete }: InvoiceProps) {
-  const [invoiceData, setInvoiceData] = useState<InvoiceData>(() => ({ ...initialInvoiceData, ...data }));
+  const [invoiceData, setInvoiceData] = useState<InvoiceData>(data);
   const [logo, setLogo] = useState<string>(logoUrl);
   const [isEditing, setIsEditing] = useState(true);
   const [isSavingPdf, setIsSavingPdf] = useState(false);
@@ -128,31 +128,7 @@ export default function Invoice({ data, logoUrl = "", onSave, onDelete }: Invoic
             <input
               value={invoiceData.companyName}
               onChange={(e) => updateField("companyName", e.target.value)}
-              placeholder="e.g. GENERAL LAND TRANSPORT L.L.C."
-            />
-          </div>
-          <div className="form-group">
-            <label>Company Brand Name (red in header)</label>
-            <input
-              value={invoiceData.companyBrandName ?? ""}
-              onChange={(e) => updateField("companyBrandName", e.target.value)}
-              placeholder="e.g. Millennium"
-            />
-          </div>
-          <div className="form-group">
-            <label>Company TRN No</label>
-            <input
-              value={invoiceData.companyTrn}
-              onChange={(e) => updateField("companyTrn", e.target.value)}
-              placeholder="Company TRN"
-            />
-          </div>
-          <div className="form-group">
-            <label>Ref</label>
-            <input
-              value={invoiceData.ref}
-              onChange={(e) => updateField("ref", e.target.value)}
-              placeholder="Invoice Ref"
+              placeholder="Company Name"
             />
           </div>
           <div className="form-group">
@@ -174,9 +150,9 @@ export default function Invoice({ data, logoUrl = "", onSave, onDelete }: Invoic
           <div className="form-group">
             <label>Payment Due</label>
             <input
+              type="date"
               value={invoiceData.paymentDue}
               onChange={(e) => updateField("paymentDue", e.target.value)}
-              placeholder="Amount or date"
             />
           </div>
         </div>
@@ -254,14 +230,13 @@ export default function Invoice({ data, logoUrl = "", onSave, onDelete }: Invoic
             <table className="items-edit-table">
               <thead>
                 <tr>
-                  <th>S No</th>
-                  <th>A/C Code</th>
+                  <th>AC Code</th>
                   <th>Description</th>
                   <th>Qty</th>
                   <th>Rate</th>
                   <th>Taxable Value</th>
-                  <th>Vat%</th>
-                  <th>Vat Amount</th>
+                  <th>VAT %</th>
+                  <th>VAT</th>
                   <th>Total</th>
                   <th></th>
                 </tr>
@@ -269,7 +244,6 @@ export default function Invoice({ data, logoUrl = "", onSave, onDelete }: Invoic
               <tbody>
                 {invoiceData.items.map((item, i) => (
                   <tr key={i}>
-                    <td className="sno">{i + 1}</td>
                     <td><input value={item.acCode} onChange={(e) => updateItem(i, "acCode", e.target.value)} /></td>
                     <td><input value={item.description} onChange={(e) => updateItem(i, "description", e.target.value)} /></td>
                     <td><input type="number" value={item.quantity} onChange={(e) => updateItem(i, "quantity", e.target.value)} /></td>
@@ -316,44 +290,6 @@ export default function Invoice({ data, logoUrl = "", onSave, onDelete }: Invoic
             />
           </div>
         </div>
-
-        <div className="form-group span-full" style={{ marginTop: "1rem" }}>
-          <label>Amount in Words</label>
-          <input
-            value={invoiceData.amountInWords}
-            onChange={(e) => updateField("amountInWords", e.target.value)}
-            placeholder="e.g. Six hundred and eighty two AED 50/100 Fils"
-          />
-        </div>
-
-        <section className="form-section">
-          <h3>Footer</h3>
-          <div className="form-group">
-            <label>Contact (Tel, Fax, P.O. Box, Address)</label>
-            <input
-              value={invoiceData.footerContact}
-              onChange={(e) => updateField("footerContact", e.target.value)}
-              placeholder="Tel.: +971 4 2511834, Fax: ..."
-            />
-          </div>
-          <div className="form-group">
-            <label>Footer Email</label>
-            <input
-              type="email"
-              value={invoiceData.footerEmail}
-              onChange={(e) => updateField("footerEmail", e.target.value)}
-              placeholder="E-mail"
-            />
-          </div>
-          <div className="form-group">
-            <label>Company Arabic Name (optional)</label>
-            <input
-              value={invoiceData.companyArabicName ?? ""}
-              onChange={(e) => updateField("companyArabicName", e.target.value)}
-              placeholder="Arabic company name"
-            />
-          </div>
-        </section>
       </div>
     );
   }
@@ -375,63 +311,53 @@ export default function Invoice({ data, logoUrl = "", onSave, onDelete }: Invoic
         )}
       </div>
 
-      <div ref={printRef} className="invoice-paper template">
-        {/* Header: left = Arabic above logo; right = brand (red) + company (grey) + TAX INVOICE */}
-        <header className="invoice-header template-header">
+      <div ref={printRef} className="invoice-paper">
+        <header className="invoice-header">
           <div className="invoice-header-left">
-            {logo ? <img src={logo} alt="" className="invoice-logo invoice-logo-circle" /> : <div className="invoice-logo-placeholder">Logo</div>}
-            <div className="invoice-brand-black">{invoiceData.companyBrandName || invoiceData.companyName || ""}</div>
+            {logo ? <img src={logo} alt="" className="invoice-logo" /> : <div className="invoice-logo-placeholder">Logo</div>}
+            <div className="invoice-company-name">{invoiceData.companyName || "Company Name"}</div>
           </div>
           <div className="invoice-header-right">
-            {invoiceData.companyArabicName && <div className="invoice-arabic" dir="rtl">{invoiceData.companyArabicName}</div>}
-            <div className="invoice-brand-red">{invoiceData.companyBrandName || invoiceData.companyName || "Company"}</div>
-            <div className="invoice-company-name">{invoiceData.companyName || "Company Name"}</div>
-            <h1 className="invoice-title">TAX INVOICE</h1>
+            <h1 className="invoice-title">INVOICE</h1>
+            <div className="invoice-meta">
+              <div className="invoice-meta-row"><span>Voucher No:</span> {invoiceData.voucherNo}</div>
+              <div className="invoice-meta-row"><span>Date:</span> {invoiceData.invoiceDate}</div>
+              <div className="invoice-meta-row"><span>Payment Due:</span> {invoiceData.paymentDue}</div>
+            </div>
           </div>
         </header>
 
-        {/* Below header: Ref | TRN No | Date */}
-        <div className="invoice-top-line">
-          <span className="invoice-top-ref">Ref. <span className="dotted invoice-dotted-ref">{invoiceData.ref || " "}</span></span>
-          <span className="invoice-top-trn">TRN No: {invoiceData.companyTrn || "________________"}</span>
-          <span className="invoice-top-date">Date <span className="dotted invoice-dotted-date">{invoiceData.invoiceDate || " "}</span></span>
-        </div>
-
-        {/* Two columns: Customer (left) | Voucher/Date/Client Code/Payment Due/Customer Ref (right) */}
-        <div className="invoice-two-cols">
-          <div className="invoice-col-left">
-            <div className="invoice-field-row"><span className="invoice-field-label">CUSTOMER NAME:</span> {invoiceData.customerName || "________________"}</div>
-            <div className="invoice-field-row"><span className="invoice-field-label">TRN No:</span> {invoiceData.trnNo || "________________"}</div>
-            <div className="invoice-field-row"><span className="invoice-field-label">PO Box:</span> {invoiceData.poBox || "________________"}</div>
-          </div>
-          <div className="invoice-col-right">
-            <div className="invoice-field-row"><span className="invoice-field-label">Voucher No:</span> {invoiceData.voucherNo}</div>
-            <div className="invoice-field-row"><span className="invoice-field-label">Date:</span> {invoiceData.invoiceDate}</div>
-            <div className="invoice-field-row"><span className="invoice-field-label">Client Code:</span> {invoiceData.clientCode || "________________"}</div>
-            <div className="invoice-field-row"><span className="invoice-field-label">Payment Due:</span> {invoiceData.paymentDue || "________________"}</div>
-            <div className="invoice-field-row"><span className="invoice-field-label">Customer Ref:</span> {invoiceData.customerRef || "________________"}</div>
+        <div className="invoice-parties">
+          <div className="invoice-block bill-to">
+            <div className="invoice-block-label">Bill To</div>
+            <div className="invoice-block-value">{invoiceData.customerName}</div>
+            {invoiceData.poBox && <div>{invoiceData.poBox}</div>}
+            <div className="invoice-details-grid">
+              {invoiceData.trnNo && <div><span>TRN:</span> {invoiceData.trnNo}</div>}
+              {invoiceData.customerCode && <div><span>Customer Code:</span> {invoiceData.customerCode}</div>}
+              {invoiceData.customerRef && <div><span>Customer Ref:</span> {invoiceData.customerRef}</div>}
+              {invoiceData.clientCode && <div><span>Client Code:</span> {invoiceData.clientCode}</div>}
+              {invoiceData.customerRefName && <div><span>Customer Ref Name:</span> {invoiceData.customerRefName}</div>}
+            </div>
           </div>
         </div>
 
-        {/* Items table: S No | A/C Code | Description | Quantity | Rate | Taxable Value | Vat% | Vat Amount | Total */}
-        <table className="invoice-items-table template-table">
+        <table className="invoice-items-table">
           <thead>
             <tr>
-              <th>S No</th>
-              <th>A/C Code</th>
+              <th>AC Code</th>
               <th>Description</th>
-              <th>Quantity</th>
+              <th>Qty</th>
               <th>Rate</th>
               <th>Taxable Value</th>
-              <th>Vat%</th>
-              <th>Vat Amount</th>
-              <th>Total</th>
+              <th>VAT %</th>
+              <th>VAT</th>
+              <th>Total Amount</th>
             </tr>
           </thead>
           <tbody>
             {invoiceData.items.map((row, i) => (
               <tr key={i}>
-                <td className="num">{i + 1}</td>
                 <td>{row.acCode}</td>
                 <td>{row.description}</td>
                 <td className="num">{row.quantity}</td>
@@ -442,63 +368,23 @@ export default function Invoice({ data, logoUrl = "", onSave, onDelete }: Invoic
                 <td className="num">{row.totalAmount}</td>
               </tr>
             ))}
-            {/* Empty rows to match reference layout (8 rows) */}
-            {Array.from({ length: 8 }).map((_, i) => (
-              <tr key={`empty-${i}`} className="invoice-empty-row">
-                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-              </tr>
-            ))}
           </tbody>
-          <tfoot>
-            <tr className="invoice-subtotal-row">
-              <td colSpan={3} className="invoice-subtotal-label">Sub Total</td>
-              <td></td>
-              <td></td>
-              <td className="num">{invoiceData.subTotal}</td>
-              <td></td>
-              <td className="num">{invoiceData.vatTotal}</td>
-              <td className="num">{invoiceData.grandTotal}</td>
-            </tr>
-            <tr className="invoice-amount-words-row">
-              <td colSpan={7} className="invoice-amount-words-cell">{invoiceData.amountInWords || ""}</td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr className="invoice-total-amount-row">
-              <td colSpan={3} className="invoice-total-amount-label">Total Amount</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td className="num invoice-total-amount-value">{invoiceData.grandTotal}</td>
-            </tr>
-          </tfoot>
         </table>
 
-        {/* Signatures */}
-        <div className="invoice-signatures">
-          <div className="invoice-sig-left">
-            <span className="invoice-sig-label">Prepared By:</span>
-            <span className="invoice-sig-line dotted">________________</span>
+        <div className="invoice-totals">
+          <div className="invoice-totals-row">
+            <span>Sub Total</span>
+            <span>{invoiceData.subTotal}</span>
           </div>
-          <div className="invoice-sig-right">
-            <span className="invoice-sig-label">Received By:</span>
-            <span className="invoice-sig-line dotted">________________</span>
-            <span className="invoice-sig-label">Customer Sign:</span>
-            <span className="invoice-sig-line dotted">________________</span>
+          <div className="invoice-totals-row">
+            <span>VAT Total</span>
+            <span>{invoiceData.vatTotal}</span>
+          </div>
+          <div className="invoice-totals-row grand">
+            <span>Grand Total</span>
+            <span>{invoiceData.grandTotal}</span>
           </div>
         </div>
-
-        {/* Footer */}
-        <footer className="invoice-footer">
-          {invoiceData.footerContact && <div className="invoice-footer-contact">{invoiceData.footerContact}</div>}
-          {invoiceData.footerEmail && (
-            <div className="invoice-footer-email">
-              {invoiceData.footerEmail.toLowerCase().startsWith("e-mail") ? invoiceData.footerEmail : `E-mail: ${invoiceData.footerEmail}`}
-            </div>
-          )}
-        </footer>
       </div>
     </div>
   );
